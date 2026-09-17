@@ -1,6 +1,2 @@
-# Allow read/write access to /sys/class/qcom-battery/.*
-allow hal_lineage_fastcharge_default sysfs_battery_supply:file rw_file_perms;
-allow hal_lineage_fastcharge_default sysfs_battery_supply:dir search;
-
-# Allow control of sysprop persist.vendor.fastchg_enabled
-set_prop(hal_lineage_fastcharge_default, vendor_fastcharge_prop)
+# The legacy fast-charge HIDL service is not built on LineageOS 23.2.
+# Its hal_lineage_fastcharge_default type no longer exists.

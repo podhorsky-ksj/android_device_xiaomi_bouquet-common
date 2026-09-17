@@ -51,10 +51,14 @@ PRODUCT_COPY_FILES += \
 
 # ANT+
 PRODUCT_PACKAGES += \
-    AntHalService-Soong \
     com.dsi.ant@1.0.vendor
 
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
+
+# Android 16 applications use the thermal-headroom callback API. The legacy
+# Qualcomm thermal-engine alone does not provide the framework thermal HAL.
+PRODUCT_PACKAGES += \
+    android.hardware.thermal-service.qti
 
 # Add common definitions for Qualcomm
 $(call inherit-product, hardware/qcom-caf/common/common.mk)
@@ -136,6 +140,7 @@ PRODUCT_PACKAGES += \
     android.hardware.camera.device@3.5:64 \
     android.hardware.camera.provider@2.6:64 \
     libdng_sdk.vendor \
+    libjxl.vendor \
     libpng.vendor \
     libpiex.vendor \
     vendor.qti.hardware.camera.device@1.0:64
@@ -206,20 +211,12 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.3.vendor \
     libcrypto_shim.vendor
 
-# Fingerprint
-PRODUCT_PACKAGES += \
-    android.hardware.biometrics.fingerprint-service.xiaomi
-
 PRODUCT_PACKAGES += \
     liblzma.vendor
 
 # Fastbootd
 PRODUCT_PACKAGES += \
     fastbootd
-
-# Fast Charge HAL
-PRODUCT_PACKAGES += \
-    vendor.lineage.fastcharge@1.0-service.qcom
 
 # FM
 ifeq ($(BOARD_HAVE_QCOM_FM),true)
@@ -284,6 +281,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     IFAAService
 
+# Legacy fingerprint HAL bridge
+# The device vendor provides the FPC/Goodix legacy HALs. Use the HIDL bridge
+# so Android's framework can consume them instead of the incompatible AIDL
+# Xiaomi adapter.
+PRODUCT_PACKAGES += \
+    android.hardware.biometrics.fingerprint@2.3-service.xiaomi
+
 # Init
 PRODUCT_PACKAGES += \
     init.class_main.sh \
@@ -327,8 +331,8 @@ PRODUCT_PACKAGES += \
 
 # LiveDisplay
 PRODUCT_PACKAGES += \
-    vendor.lineage.livedisplay@2.0-service-sdm \
-    vendor.lineage.livedisplay@2.0-service-sysfs
+    vendor.lineage.livedisplay-service.sdm \
+    vendor.lineage.livedisplay-service.sysfs
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -347,14 +351,8 @@ PRODUCT_PACKAGES += \
 # OMX
 PRODUCT_PACKAGES += \
     libc2dcolorconvert \
-    libhypv_intercept \
     libmm-omxcore \
     libOmxCore \
-    libOmxAacEnc \
-    libOmxAmrEnc \
-    libOmxEvrcEnc \
-    libOmxG711Enc \
-    libOmxQcelp13Enc \
     libOmxVdec \
     libOmxVenc \
     libstagefrighthw
@@ -387,11 +385,9 @@ PRODUCT_SOONG_NAMESPACES += \
 PRODUCT_PACKAGES += \
     libprotobuf-cpp-full-vendorcompat \
     libprotobuf-cpp-full-3.9.1-vendorcompat \
-    libprotobuf-cpp-lite-vendorcompat
-
-PRODUCT_COPY_FILES += \
-    prebuilts/vndk/v33/arm64/arch-arm64-armv8-a/shared/vndk-sp/libutils.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libutils-v33.so \
-    prebuilts/vndk/v29/arm64/arch-arm64-armv8-a/shared/vndk-core/libprotobuf-cpp-lite.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf-cpp-lite-v29.so \
+    libprotobuf-cpp-lite-vendorcompat \
+    libprotobuf-cpp-lite-v29 \
+    libutils-v33
 
 # Public libraries
 PRODUCT_COPY_FILES += \
@@ -512,15 +508,40 @@ PRODUCT_ART_TARGET_INCLUDE_DEBUG_BUILD := false
 PRODUCT_MINIMIZE_JAVA_DEBUG_INFO := true
 USE_DEX2OAT_DEBUG := false
 
-PRODUCT_COPY_FILES += \
-    prebuilts/vndk/v32/arm64/arch-arm-armv8-a/shared/vndk-sp/libhidlbase.so:$(TARGET_COPY_OUT_SYSTEM)/lib/libhidlbase-v32.so \
-    prebuilts/vndk/v32/arm64/arch-arm64-armv8-a/shared/vndk-sp/libhidlbase.so:$(TARGET_COPY_OUT_SYSTEM)/lib64/libhidlbase-v32.so \
-    prebuilts/vndk/v32/arm64/arch-arm-armv8-a/shared/vndk-sp/libhidlbase.so:$(TARGET_COPY_OUT_VENDOR)/lib/libhidlbase-v32.so \
-    prebuilts/vndk/v32/arm64/arch-arm64-armv8-a/shared/vndk-sp/libhidlbase.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libhidlbase-v32.so
-
 # Updatable Apex
 OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 # Inherit the proprietary files
 $(call inherit-product, vendor/xiaomi/bouquet-common/bouquet-common-vendor.mk)
+
+# Qualcomm system_ext libraries shipped for both 32-bit and 64-bit clients.
+PRODUCT_PACKAGES += \
+    xiaomi_system_ext_com_qualcomm_qti_ant_1_0 \
+    xiaomi_system_ext_libbinauralrenderer_wrapper_qti \
+    xiaomi_system_ext_libhoaeffects_qti \
+    xiaomi_system_ext_libhoaeffects_csim \
+    xiaomi_system_ext_liblistenjni_qti \
+    xiaomi_system_ext_liblistensoundmodel2_qti \
+    xiaomi_system_ext_liblsmclient \
+    xiaomi_system_ext_libmdsprpc_system \
+    xiaomi_system_ext_libmmosal \
+    xiaomi_system_ext_libmmparser_lite \
+    xiaomi_system_ext_libvr_amb_engine \
+    xiaomi_system_ext_libvr_object_engine \
+    xiaomi_system_ext_vendor_qti_hardware_audiohalext_1_0 \
+    xiaomi_system_ext_vendor_qti_hardware_qseecom_1_0 \
+    xiaomi_system_ext_vendor_qti_hardware_sensorscalibrate_1_0 \
+    xiaomi_system_ext_vendor_qti_voiceprint_1_0
+
+PRODUCT_PACKAGES += \
+    xiaomi_system_libFileMux \
+    xiaomi_system_libOmxMux \
+    libhidlbase-v32
+
+# The legacy FPC HAL links against the pre-Android-12 compatibility library
+# from the vendor linker namespace.  The Soong module above installs its
+# normal system_ext variant; also ship the vendor copy required by the blob.
+PRODUCT_COPY_FILES += \
+    hardware/lineage/compat/vndk/v32/arm/libhidlbase-v32.so:$(TARGET_COPY_OUT_VENDOR)/lib/libhidlbase-v32.so \
+    hardware/lineage/compat/vndk/v32/arm64/libhidlbase-v32.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libhidlbase-v32.so

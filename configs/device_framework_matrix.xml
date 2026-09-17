@@ -24,13 +24,10 @@
             <instance>gnss_vendor</instance>
         </interface>
     </hal>
-    <hal format="hidl" optional="false">
+    <hal format="aidl" optional="false">
         <name>android.hardware.light</name>
-        <version>2.0</version>
-        <interface>
-            <name>ILight</name>
-            <instance>default</instance>
-        </interface>
+        <version>2</version>
+        <fqname>ILights/default</fqname>
     </hal>
     <hal format="hidl" optional="false">
         <name>vendor.goodix.hardware.fingerprint</name>

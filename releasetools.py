@@ -23,6 +23,11 @@ def FullOTA_InstallBegin(info):
   common.ZipWriteStr(info.output_zip, "install/bin/flash_super_dummy.sh", flash_script);
   info.script.AppendExtra('package_extract_file("install/bin/flash_super_dummy.sh", "/tmp/flash_super_dummy.sh");')
   info.script.AppendExtra('run_program("/sbin/sh", "/tmp/flash_super_dummy.sh");')
+
+  # Whyred has a separate recovery partition. Install the recovery image while
+  # the OTA is running so an older recovery can install a matching build.
+  info.script.Print("Installing recovery image...")
+  info.script.WriteRawImage("/recovery", "recovery.img")
   return
 
 def AddImage(info, dir, basename, dest):

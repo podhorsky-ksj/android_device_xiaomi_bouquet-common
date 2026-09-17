@@ -4,6 +4,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+# Start the legacy fingerprint HAL bridge from the device-specific init script.
+# This file is imported by init.qcom.rc before the late_start class is started.
+service vendor.fps_hal /vendor/bin/hw/android.hardware.biometrics.fingerprint@2.3-service.xiaomi
+    class late_start
+    user system
+    group system input uhid
+
 on init
     chown system system /dev/goodix_fp
     chmod 0644 /dev/goodix_fp

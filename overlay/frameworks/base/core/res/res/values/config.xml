@@ -18,6 +18,12 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
+    <!-- Android 16 requires explicit sensor configuration for legacy HIDL biometrics. -->
+    <string-array name="config_biometric_sensors" translatable="false">
+        <!-- ID 0, fingerprint, BIOMETRIC_STRONG; whyred has a rear sensor. -->
+        <item>0:2:15</item>
+    </string-array>
+
     <!-- Set to true to add links to Cell Broadcast app from Settings and MMS app. -->
     <bool name="config_cellBroadcastAppLinks">true</bool>
 

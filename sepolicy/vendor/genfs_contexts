@@ -25,9 +25,6 @@ genfscon proc  /sys/kernel/sched_boost                           u:object_r:proc
 # Touchpanel
 genfscon sysfs /touchpanel                                      u:object_r:sysfs_touchpanel:s0
 
-# Wakeup
-genfscon sysfs /devices/platform/soc/ca0c000.qcom,cci/ca0c000.qcom,cci:qcom,camera@0/video4linux/video3/wakeup u:object_r:sysfs_wakeup:s0
-genfscon sysfs /devices/platform/soc/ca0c000.qcom,cci/ca0c000.qcom,cci:qcom,camera@1/video4linux/video4/wakeup u:object_r:sysfs_wakeup:s0
-genfscon sysfs /devices/platform/soc/ca0c000.qcom,cci/ca0c000.qcom,cci:qcom,camera@2/video4linux/video5/wakeup u:object_r:sysfs_wakeup:s0
+# Camera wakeup nodes are provided by the Qualcomm sdm660 policy.
 genfscon sysfs /devices/platform/soc/soc:fpc1020/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/soc:hall_switch/wakeup u:object_r:sysfs_wakeup:s0

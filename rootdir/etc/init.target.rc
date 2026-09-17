@@ -55,7 +55,12 @@ on fs
 
 on post-fs
     start vendor.qseecomd
-    wait_for_prop vendor.sys.listeners.registered true
+
+# qseecomd may not publish vendor.sys.listeners.registered on newer Android
+# releases.  Do not block init waiting for this legacy notification: a blocked
+# post-fs action prevents class core/main services, including adbd, from ever
+# starting.  Enable IPA once the notification is available.
+on property:vendor.sys.listeners.registered=true
     write /dev/ipa 1
 
 on init
