@@ -144,6 +144,11 @@ TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
 
 
 # Reserve partition space
+ifneq ($(strip $(MINDTHEGAPPS_ROOT)),)
+# MindTheGapps is built directly into product; do not reserve the stock
+# no-GApps headroom or the resulting dynamic-partition layout will overflow.
+BOARD_PRODUCTIMAGE_PARTITION_RESERVED_SIZE := 268435456
+endif
 include vendor/lineage/config/BoardConfigReservedSize.mk
 
 # Power
@@ -189,3 +194,4 @@ WPA_SUPPLICANT_VERSION := VER_0_8_X
 
 # Inherit the proprietary files
 include vendor/xiaomi/bouquet-common/BoardConfigVendor.mk
+BOARD_SEPOLICY_M4DEFS += skip_bluetooth_lpp=true

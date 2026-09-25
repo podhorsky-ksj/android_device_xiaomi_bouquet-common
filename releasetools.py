@@ -24,10 +24,10 @@ def FullOTA_InstallBegin(info):
   info.script.AppendExtra('package_extract_file("install/bin/flash_super_dummy.sh", "/tmp/flash_super_dummy.sh");')
   info.script.AppendExtra('run_program("/sbin/sh", "/tmp/flash_super_dummy.sh");')
 
-  # Whyred has a separate recovery partition. Install the recovery image while
-  # the OTA is running so an older recovery can install a matching build.
-  info.script.Print("Installing recovery image...")
-  info.script.WriteRawImage("/recovery", "recovery.img")
+  # The recovery image is flashed separately before installing this ROM.
+  # Writing it from inside the running recovery is unsafe on whyred and can
+  # make compatible recoveries report a recovery-patch failure. Keep this OTA
+  # focused on the boot and dynamic-partition payload.
   return
 
 def AddImage(info, dir, basename, dest):
